@@ -185,6 +185,27 @@ def generate_documentation(endpoint, context, source_code=""):
     endpoint["function"]
 )
 
+    domain = context.get("domain", "Unknown")
+    business_purpose = context.get(
+        "business_purpose",
+        "Provides API operations."
+    )
+
+    workflow = context.get("workflow", [])
+
+    context_sentence = (
+        f"This endpoint is part of the {domain} API. "
+        f"{business_purpose} "
+        f"It is built using {framework} and uses {data_source}. "
+        f"Authentication is handled using {authentication}."
+    )
+
+    if workflow:
+        context_sentence += (
+            f" This API supports a workflow involving "
+            f"{', '.join(workflow).lower()}."
+        )
+
     return {
         "summary": f"{method} {path} — {function_name}",
         "purpose": purpose,
@@ -194,9 +215,5 @@ def generate_documentation(endpoint, context, source_code=""):
         "authentication": authentication,
         "use_cases": use_cases,
         "example_response": example_response,
-        "context": (
-            f"This endpoint is part of the API. "
-            f"It uses {framework} with {data_source}. "
-            f"Authentication: {authentication}."
-        )
+        "context": context_sentence
     }

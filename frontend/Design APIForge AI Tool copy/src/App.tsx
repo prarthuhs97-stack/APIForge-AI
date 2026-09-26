@@ -27,13 +27,26 @@ type AnalysisResult = {
   context: string;
 };
 context?: {
-    module: string;
-    purpose: string;
-    framework: string;
-    data_source: string;
-    authentication: string;
-    related_endpoints: string[];
-  };
+  module: string;
+  purpose: string;
+  framework: string;
+  data_source: string;
+  authentication: string;
+  related_endpoints: string[];
+
+  domain: string;
+  business_purpose: string;
+  resources: string[];
+
+  endpoint_relationships: {
+    method: string;
+    path: string;
+    function: string;
+    description: string;
+  }[];
+
+  workflow: string[];
+};
 
   security?: {
     type: string;
@@ -212,24 +225,55 @@ function NavBar({ tab, setTab }: { tab: NavTab; setTab: (t: NavTab) => void }) {
       <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", height: 54, gap: 0 }}>
 
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 36, flexShrink: 0 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 9,
-            background: "linear-gradient(135deg, #7c6dfa 0%, #a855f7 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 0 18px rgba(124,109,250,0.45), 0 2px 0 rgba(255,255,255,0.08) inset",
-          }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="3" width="12" height="1.5" rx="0.75" fill="white" opacity="0.9"/>
-              <rect x="2" y="7" width="8" height="1.5" rx="0.75" fill="white" opacity="0.7"/>
-              <rect x="2" y="11" width="10" height="1.5" rx="0.75" fill="white" opacity="0.5"/>
-              <circle cx="13" cy="11.75" r="2.5" fill="#06b6d4" opacity="0.9"/>
-            </svg>
-          </div>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 15.5, color: "var(--text)", letterSpacing: "-0.03em" }}>
-            APIForge <span style={{ color: "#a89dff" }}>AI</span>
-          </span>
-        </div>
+<button
+  type="button"
+  onClick={() => setTab("Settings")}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    marginRight: 36,
+    flexShrink: 0,
+    cursor: "pointer",
+    background: "transparent",
+    border: "none",
+    padding: 0,
+    color: "inherit",
+  }}
+>
+  <div
+    style={{
+      width: 32,
+      height: 32,
+      borderRadius: 9,
+      background: "linear-gradient(135deg, #7c6dfa 0%, #a855f7 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      boxShadow:
+        "0 0 18px rgba(124,109,250,0.45), 0 2px 0 rgba(255,255,255,0.08) inset",
+    }}
+  >
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="2" y="3" width="12" height="1.5" rx="0.75" fill="white" opacity="0.9" />
+      <rect x="2" y="7" width="8" height="1.5" rx="0.75" fill="white" opacity="0.7" />
+      <rect x="2" y="11" width="10" height="1.5" rx="0.75" fill="white" opacity="0.5" />
+      <circle cx="13" cy="11.75" r="2.5" fill="#06b6d4" opacity="0.9" />
+    </svg>
+  </div>
+
+  <span
+    style={{
+      fontFamily: "'Outfit', sans-serif",
+      fontWeight: 700,
+      fontSize: 15.5,
+      color: "var(--text)",
+      letterSpacing: "-0.03em",
+    }}
+  >
+    APIForge <span style={{ color: "#a89dff" }}>AI</span>
+  </span>
+</button>
 
         {/* Nav */}
         <nav style={{ display: "flex", gap: 2, flex: 1 }}>
@@ -247,13 +291,16 @@ function NavBar({ tab, setTab }: { tab: NavTab; setTab: (t: NavTab) => void }) {
 
         {/* Right */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <a href="#" style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", color: "var(--text-2)", textDecoration: "none", fontSize: 12.5, transition: "border-color 140ms, color 140ms" }}
+          <a
+  href="https://github.com/prarthuhs97-stack/APIForge-AI"
+  target="_blank"
+  rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", color: "var(--text-2)", textDecoration: "none", fontSize: 12.5, transition: "border-color 140ms, color 140ms" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-2)"; (e.currentTarget as HTMLElement).style.color = "var(--text)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.color = "var(--text-2)"; }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             GitHub
           </a>
-          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #7c6dfa, #a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "white", flexShrink: 0 }}>D</div>
+          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #7c6dfa, #a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "white", flexShrink: 0 }}>A</div>
         </div>
       </div>
     </header>
@@ -325,8 +372,10 @@ function SyntaxLine({ tokens }: { tokens: Token[] }) {
   );
 }
 
-function CodeEditor({ code, setCode, onAnalyze, analyzing }: {
-  code: string; setCode: (c: string) => void;
+function CodeEditor({ code, setCode,previousCode,
+setPreviousCode, onAnalyze, analyzing }: {
+  code: string; setCode: (c: string) => void;previousCode: string;
+setPreviousCode: React.Dispatch<React.SetStateAction<string>>;
   onAnalyze: () => void; analyzing: boolean;
 }) {
   const lines = code.split("\n");
@@ -358,7 +407,40 @@ function CodeEditor({ code, setCode, onAnalyze, analyzing }: {
           <button className="btn-ghost" onClick={() => setCode("")}>Clear</button>
         </div>
       </div>
+{/* Previous API Version */}
+<div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
+  <div
+    style={{
+      fontSize: 12,
+      fontWeight: 600,
+      color: "var(--text-2)",
+      marginBottom: 8,
+    }}
+  >
+    Previous API Version
+  </div>
 
+  <textarea
+    value={previousCode}
+    onChange={e => setPreviousCode(e.target.value)}
+    placeholder="Paste the previous API version here..."
+    spellCheck={false}
+    style={{
+      width: "100%",
+      height: 120,
+      resize: "vertical",
+      padding: 10,
+      borderRadius: "var(--radius-sm)",
+      border: "1px solid var(--border)",
+      background: "var(--bg-2)",
+      color: "var(--text)",
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: 11.5,
+      lineHeight: "20px",
+      boxSizing: "border-box",
+    }}
+  />
+</div>
       {/* Editor body */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 380 }}>
         {/* Line numbers */}
@@ -940,6 +1022,33 @@ function DocViewer({
           overflowY: "auto",
         }}
       >
+        {/* API Context */}
+<div
+  style={{
+    padding: "12px 14px",
+    borderRadius: "var(--radius-sm)",
+    background: "rgba(124,109,250,0.06)",
+    border: "1px solid rgba(124,109,250,0.16)",
+  }}
+>
+  <div
+    className="section-label"
+    style={{ marginBottom: 8 }}
+  >
+    Context
+  </div>
+
+  <div
+    style={{
+      fontSize: 12.5,
+      color: "var(--text-2)",
+      lineHeight: 1.7,
+    }}
+  >
+    {documentation?.context ??
+      "No additional context available."}
+  </div>
+</div>
         {/* Endpoint heading */}
         <div>
           <div
@@ -1125,6 +1234,7 @@ function DocViewer({
             </div>
           </div>
         </div>
+  
 
         {/* Parameters */}
         <div>
@@ -1408,40 +1518,55 @@ function ApiContext({
   const documentation = analysisResult?.documentation?.[activeIdx];
 
   const rows = [
-    {
-      label: "Module",
-      value: context?.module ?? "Unknown",
-      mono: true
-    },
-    {
-      label: "Purpose",
-      value:
-  context?.purpose ??
-  documentation?.purpose ??
-  "API endpoint operations"
-    },
-    {
-      label: "Framework",
-      value: context?.framework ?? "Unknown",
-      mono: true
-    },
-    {
-      label: "Data Source",
-      value: context?.data_source ?? "Unknown"
-    },
-    {
-      label: "Authentication",
-      value: context?.authentication ?? "Not detected"
-    },
-    {
-      label: "Related Endpoints",
-      value: context?.related_endpoints?.length
-        ? context.related_endpoints.join(", ")
-        : "—",
-      mono: true
-    },
-  ];
-
+  {
+    label: "Domain",
+    value: context?.domain ?? "Unknown",
+    mono: true
+  },
+  {
+    label: "Business Purpose",
+    value: context?.business_purpose ?? "Unknown"
+  },
+  {
+    label: "Resources",
+    value: context?.resources?.length
+      ? context.resources.join(", ")
+      : "—",
+    mono: true
+  },
+  {
+    label: "Module",
+    value: context?.module ?? "Unknown",
+    mono: true
+  },
+  {
+    label: "Purpose",
+    value:
+      context?.purpose ??
+      documentation?.purpose ??
+      "API endpoint operations"
+  },
+  {
+    label: "Framework",
+    value: context?.framework ?? "Unknown",
+    mono: true
+  },
+  {
+    label: "Data Source",
+    value: context?.data_source ?? "Unknown"
+  },
+  {
+    label: "Authentication",
+    value: context?.authentication ?? "Not detected"
+  },
+  {
+    label: "Related Endpoints",
+    value: context?.related_endpoints?.length
+      ? context.related_endpoints.join(", ")
+      : "—",
+    mono: true
+  },
+];
   return (
     <div className="panel">
       <SectionHeader
@@ -1629,8 +1754,7 @@ function AnalysisPanel({
   ) ?? 0
 )} accent="#60a5fa"
           icon={<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M4 2v9M9 2v9M1 6.5h11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>} />
-        <StatCard label="Secrets Redacted" value={String(analysisResult?.security?.length ?? 0)} accent="#fb7185" sub="auto-protected"
-          icon={<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1L1.5 3v3.5C1.5 9.8 3.7 12.1 6.5 12.5 9.3 12.1 11.5 9.8 11.5 6.5V3L6.5 1z" stroke="currentColor" strokeWidth="1.2"/></svg>} />
+<StatCard label="Security Issues" value={String(analysisResult?.security?.length ?? 0)} accent="#fb7185" sub="auto-protected"          icon={<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1L1.5 3v3.5C1.5 9.8 3.7 12.1 6.5 12.5 9.3 12.1 11.5 9.8 11.5 6.5V3L6.5 1z" stroke="currentColor" strokeWidth="1.2"/></svg>} />
       </div>
       <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
         <StatCard label="HTTP Methods" value={String(
@@ -1685,7 +1809,11 @@ function AnalysisPanel({
 
 // ─── API Changes Tab ──────────────────────────────────────────────────────────
 
-function ApiChangesView() {
+function ApiChangesView({
+  analysisResult,
+}: {
+  analysisResult: AnalysisResult | null;
+}) {
   return (
     <div
       style={{
@@ -1715,100 +1843,120 @@ function ApiChangesView() {
           API Changes
         </h2>
 
-        <span className="badge badge-green">
-          No changes detected
+        <span
+          className={`badge ${
+            analysisResult?.api_changes?.has_changes
+              ? "badge-yellow"
+              : "badge-green"
+          }`}
+        >
+          {analysisResult?.api_changes?.has_changes
+            ? `${analysisResult.api_changes.changes.length} changes detected`
+            : "No changes detected"}
         </span>
       </div>
 
-      <div
-        className="panel"
-        style={{
-          padding: "50px 30px",
-          textAlign: "center",
-        }}
-      >
-        <div
-          style={{
-            width: 42,
-            height: 42,
-            margin: "0 auto 16px",
-            borderRadius: "50%",
-            background: "var(--green-dim)",
-            border: "1px solid rgba(16,185,129,0.2)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-          >
-            <circle
-              cx="9"
-              cy="9"
-              r="7"
-              stroke="#10b981"
-              strokeWidth="1.4"
-            />
-            <path
-              d="M5.5 9l2.2 2.2L12.5 6.5"
-              stroke="#10b981"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
+      <div className="panel" style={{ padding: 24 }}>
+        {analysisResult?.api_changes?.has_changes ? (
+          <>
+            <div
+              style={{
+                fontSize: 15,
+                fontWeight: 600,
+                color: "var(--text)",
+                marginBottom: 16,
+              }}
+            >
+              Detected API Changes
+            </div>
 
-        <div
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "var(--text)",
-            marginBottom: 8,
-          }}
-        >
-          No previous API version available
-        </div>
+            {analysisResult.api_changes.changes.map((change, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: "14px 16px",
+                  marginBottom: 10,
+                  borderRadius: "var(--radius-sm)",
+                  background: "var(--surface-2)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 6,
+                  }}
+                >
+                  <span className="badge badge-yellow">
+                    {change.type.toUpperCase()}
+                  </span>
 
-        <p
-          style={{
-            maxWidth: 480,
-            margin: "0 auto",
-            fontSize: 12.5,
-            color: "var(--text-2)",
-            lineHeight: 1.7,
-          }}
-        >
-          APIForge AI needs a previous API version to compare
-          changes and detect breaking modifications.
-        </p>
+                  <span
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 12,
+                      color: "var(--text)",
+                    }}
+                  >
+                    {change.method} {change.path}
+                  </span>
+                </div>
 
-        <div
-          style={{
-            marginTop: 20,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 7,
-            padding: "8px 12px",
-            borderRadius: "var(--radius-sm)",
-            background: "var(--surface-2)",
-            border: "1px solid var(--border)",
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 10.5,
-            color: "var(--text-3)",
-          }}
-        >
-          Change detection · Waiting for baseline
-        </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--text-2)",
+                  }}
+                >
+                  {change.message}
+                </div>
+              </div>
+            ))}
+
+            <div
+              style={{
+                marginTop: 18,
+                fontSize: 11,
+                color: "var(--text-3)",
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
+            >
+              Change detection · Baseline comparison complete
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              style={{
+                fontSize: 15,
+                fontWeight: 600,
+                color: "var(--text)",
+                marginBottom: 8,
+              }}
+            >
+              No changes detected
+            </div>
+
+            <p
+              style={{
+                maxWidth: 480,
+                margin: "0 auto",
+                fontSize: 12.5,
+                color: "var(--text-2)",
+                lineHeight: 1.7,
+              }}
+            >
+              No differences were detected between the current API
+              and the previous API version.
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
 }
-
 // ─── Settings Tab ─────────────────────────────────────────────────────────────
 
 function SettingsView() {
@@ -2015,7 +2163,7 @@ function AnalyzingOverlay() {
 // ─── Root App ─────────────────────────────────────────────────────────────────
 
 export default function App() {
-const [code, setCode] = useState("");  const [tab, setTab] = useState<NavTab>("Dashboard");
+const [code, setCode] = useState(""); const [previousCode, setPreviousCode] = useState(""); const [tab, setTab] = useState<NavTab>("Dashboard");
   const [analyzed, setAnalyzed] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [docIdx, setDocIdx] = useState(0);
@@ -2026,7 +2174,8 @@ const [code, setCode] = useState("");  const [tab, setTab] = useState<NavTab>("D
   const [error, setError] = useState("");
 
   const handleAnalyze = async () => {
-    console.log("ANALYZE BUTTON CLICKED");
+    console.log("ANALYZE BUTTON CLICKED");console.log("Previous Code:", previousCode);
+console.log("Current Code:", code);
     if (!code.trim() || analyzing) return;
 
   setAnalyzing(true);
@@ -2038,7 +2187,10 @@ const [code, setCode] = useState("");  const [tab, setTab] = useState<NavTab>("D
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({
+  code,
+  previous_code: previousCode,
+})
     });
 
     if (!response.ok) {
@@ -2070,7 +2222,8 @@ console.log("BACKEND DATA:", JSON.stringify(data, null, 2));    setAnalysisResul
             <div className="workspace" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, alignItems: "start" }}>
               {/* Left — sticky editor */}
               <div style={{ position: "sticky", top: 70, maxHeight: "calc(100vh - 90px)", display: "flex", flexDirection: "column" }}>
-                <CodeEditor code={code} setCode={setCode} onAnalyze={handleAnalyze} analyzing={analyzing} />
+                <CodeEditor code={code} setCode={setCode} previousCode={previousCode}
+setPreviousCode={setPreviousCode} onAnalyze={handleAnalyze} analyzing={analyzing} />
               </div>
               {/* Right — analysis */}
               <div>
@@ -2106,7 +2259,9 @@ console.log("BACKEND DATA:", JSON.stringify(data, null, 2));    setAnalysisResul
         </div>
       )}
 
-      {tab === "API Changes" && <ApiChangesView />}
+      {tab === "API Changes" && (
+  <ApiChangesView analysisResult={analysisResult} />
+)}
       {tab === "Settings" && <SettingsView />}
     </div>
   );
