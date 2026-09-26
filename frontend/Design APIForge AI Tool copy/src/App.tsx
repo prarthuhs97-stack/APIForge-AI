@@ -2182,8 +2182,7 @@ console.log("Current Code:", code);
   setError("");
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/analyze", {
-      method: "POST",
+const response = await fetch("https://apiforge-ai-8ut2.onrender.com/analyze", {      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
